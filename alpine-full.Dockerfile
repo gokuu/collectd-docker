@@ -7,12 +7,16 @@ WORKDIR /
 RUN apk add curl build-base
 RUN apk add --update linux-headers
 
+
 RUN curl -qLs https://storage.googleapis.com/collectd-tarballs/collectd-5.9.0.tar.bz2 | \
   tar -xv --bzip2
 
 WORKDIR /collectd-5.9.0
 
-RUN ./configure
+# Extra necessary packages
+RUN apk add libatasmart libatasmart-dev
+
+RUN ./configure --enable-smart
 RUN make all install
 
 # Destination image

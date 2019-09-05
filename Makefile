@@ -1,7 +1,11 @@
-.PHONY: build-debian
-build-debian:
+.PHONY: debian
+debian:
 	docker build -f debian.Dockerfile . --tag pedromr/collectd:latest
 
-.PHONY: build-alpine
-build-alpine:
-	docker build -f alpine.Dockerfile . --tag pedromr/collectd:latest-alpine
+.PHONY: alpine
+alpine:
+	docker build -f alpine.Dockerfile . --tag pedromr/collectd:alpine
+
+.PHONY: alpine-full
+alpine-full:
+	docker build -f alpine-full.Dockerfile . --tag pedromr/collectd:alpine-full
