@@ -19,6 +19,10 @@ RUN make all install
 
 FROM alpine:latest
 
+# wait-for-it.sh script
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /
+RUN chmod +x /wait-for-it.sh
+
 COPY --from=builder /opt/collectd /opt/collectd
 
 WORKDIR /opt/collectd
