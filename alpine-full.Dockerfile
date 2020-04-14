@@ -7,10 +7,10 @@ WORKDIR /
 RUN apk add curl build-base
 RUN apk add --update linux-headers
 
-RUN curl -qLs https://storage.googleapis.com/collectd-tarballs/collectd-5.9.0.tar.bz2 | \
+RUN curl -qLs https://storage.googleapis.com/collectd-tarballs/collectd-5.10.0.tar.bz2 | \
   tar -xv --bzip2
 
-WORKDIR /collectd-5.9.0
+WORKDIR /collectd-5.910.0
 
 # Extra necessary packages
 RUN apk add libatasmart libatasmart-dev
@@ -28,7 +28,6 @@ RUN apk add libatasmart
 # wait-for-it.sh script
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /
 RUN chmod +x /wait-for-it.sh
-
 
 COPY --from=builder /opt/collectd /opt/collectd
 
