@@ -1,0 +1,23 @@
+name: Build and Publish Docker Images
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build-and-publish:
+    strategy:
+      matrix:
+        architecture: [debian, alpine, alpine-full]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file ${{ matrix.architecture }}.Dockerfile --tag pedromr/collectd:${{ matrix.architecture }}
+    - name: Publish the Docker image
+      run: |
+        docker login -u ${{ secrets.DockerHubUsername }} -p ${{ secrets.DockerHubToken }}
+        docker push pedromr/collectd:${{ matrix.architecture }}
+    - name: Publish the 'latest' tag
+      if: ${{ matrix.architecture == 'debian' }}
+      run: |
+        docker tag pedromr/collectd:${{ matrix.architecture }} pedromr/collectd:latest
+        docker push pedromr/collectd:latest
