@@ -1,23 +1,35 @@
-name: Build and Publish Docker Images
+name: Build and Publish Docker Images From Tag
 on:
   push:
-    branches: [ master ]
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 jobs:
   build-and-publish:
     strategy:
       matrix:
-        architecture: [debian, alpine, alpine-full]
+        architecture:
+          - debian
+          - alpine
+          - alpine-full
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file ${{ matrix.architecture }}.Dockerfile --tag pedromr/collectd:${{ matrix.architecture }}
-    - name: Publish the Docker image
-      run: |
-        docker login -u ${{ secrets.DockerHubUsername }} -p ${{ secrets.DockerHubToken }}
-        docker push pedromr/collectd:${{ matrix.architecture }}
-    - name: Publish the 'latest' tag
-      if: ${{ matrix.architecture == 'debian' }}
-      run: |
-        docker tag pedromr/collectd:${{ matrix.architecture }} pedromr/collectd:latest
-        docker push pedromr/collectd:latest
+      - uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Build and tag Docker image
+        run: |
+          docker build . --file ${{ matrix.architecture }}.Dockerfile --tag pedromr/collectd:${{ matrix.architecture }}
+          docker tag pedromr/collectd:${{ matrix.architecture }} pedromr/collectd:${{ matrix.architecture }}-${{ steps.get_version.outputs.VERSION }}
+      - name: Publish image
+        run: |
+          docker login -u ${{ secrets.DockerHubUsername }} -p ${{ secrets.DockerHubToken }}
+          docker push pedromr/collectd:${{ matrix.architecture }}
+          docker push pedromr/collectd:${{ matrix.architecture }}-${{ steps.get_version.outputs.VERSION }}
+      - name: Publish the 'no-architecture' and 'latest' tag
+        if: ${{ matrix.architecture == 'debian' }}
+        run: |
+          docker tag pedromr/collectd:${{ matrix.architecture }} pedromr/collectd:${{ steps.get_version.outputs.VERSION }}
+          docker tag pedromr/collectd:${{ matrix.architecture }} pedromr/collectd:latest
+          docker push pedromr/collectd:${{ steps.get_version.outputs.VERSION }}
+          docker push pedromr/collectd:latest
