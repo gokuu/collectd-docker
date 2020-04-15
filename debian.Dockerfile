@@ -25,4 +25,4 @@ RUN chmod +x /wait-for-it.sh
 
 WORKDIR /opt/collectd
 
-CMD ["./sbin/collectd", "-f"]
+ENTRYPOINT ["./sbin/collectd", "-f"]

@@ -27,4 +27,4 @@ COPY --from=builder /opt/collectd /opt/collectd
 
 WORKDIR /opt/collectd
 
-CMD ["./sbin/collectd", "-f"]
+ENTRYPOINT ["./sbin/collectd", "-f"]
