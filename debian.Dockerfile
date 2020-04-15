@@ -4,10 +4,10 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends python-pip python-setuptools curl bzip2 gcc build-essential && \
   apt-get clean
 
-RUN curl -qLs https://storage.googleapis.com/collectd-tarballs/collectd-5.10.0.tar.bz2 | \
+RUN curl -qLs https://storage.googleapis.com/collectd-tarballs/collectd-5.11.0.tar.bz2 | \
   tar -xv --bzip2
 
-WORKDIR /collectd-5.10.0
+WORKDIR /collectd-5.11.0
 
 RUN ./configure
 RUN make all install

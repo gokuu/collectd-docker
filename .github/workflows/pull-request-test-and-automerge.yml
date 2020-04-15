@@ -1,0 +1,38 @@
+name: Test & merge pull request
+on:
+  pull_request:
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        architecture:
+          - debian
+          - alpine
+          - alpine-full
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          docker build . --file ${{ matrix.architecture }}.Dockerfile --tag collectd:test-${{ matrix.architecture }}
+      - name: Test image
+        run: |
+          docker run --rm collectd:test-${{ matrix.architecture }} -t -T
+  automerge:
+    needs:
+      - build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: automerge
+        uses: "pascalgn/automerge-action@v0.8.0"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: "!wip,!work in progress"
+          MERGE_REMOVE_LABELS: "automerge"
+          MERGE_METHOD: "squash"
+          MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
+          MERGE_FORKS: "false"
+          MERGE_RETRIES: "6"
+          MERGE_RETRY_SLEEP: "10000"
+          UPDATE_LABELS: ""
+          UPDATE_METHOD: "rebase"
