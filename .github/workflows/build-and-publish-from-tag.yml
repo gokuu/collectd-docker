@@ -1,4 +1,4 @@
-name: Build and Publish Docker Images
+name: Build and Publish Docker Images From Tag
 on:
   push:
     tags:
@@ -7,7 +7,10 @@ jobs:
   build-and-publish:
     strategy:
       matrix:
-        architecture: [debian, alpine, alpine-full]
+        architecture:
+          - debian
+          - alpine
+          - alpine-full
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
